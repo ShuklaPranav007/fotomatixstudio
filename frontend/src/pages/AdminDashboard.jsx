@@ -78,6 +78,24 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0f0f1a 0%,#1a0f2e 40%,#0f1a2e 100%)', position: 'relative' }}>
+
+      <style>{`
+        .media-grid { grid-template-columns: repeat(5, minmax(0,1fr)); }
+        .media-thumb { height: 90px; }
+        @media (max-width: 1024px) {
+          .media-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+          .media-thumb { height: 110px; }
+        }
+        @media (max-width: 768px) {
+          .media-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+          .media-thumb { height: 130px; }
+        }
+        @media (max-width: 480px) {
+          .media-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+          .media-thumb { height: 150px; }
+        }
+      `}</style>
+
       <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '500px', height: '500px', background: 'radial-gradient(circle,rgba(120,60,255,0.15),transparent 70%)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: 0, right: 0, width: '400px', height: '400px', background: 'radial-gradient(circle,rgba(60,180,255,0.1),transparent 70%)', pointerEvents: 'none' }} />
 
@@ -195,7 +213,7 @@ function CategorySection({ cat, items, onDelete }) {
         </span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,minmax(0,1fr))', gap: '10px' }}>
+      <div className="media-grid" style={{ display: 'grid', gap: '10px' }}>
         {items.map(item => (
           <div key={item._id} style={{
             borderRadius: '12px', overflow: 'hidden',
@@ -207,8 +225,8 @@ function CategorySection({ cat, items, onDelete }) {
             onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
           >
             {item.type === 'video'
-              ? <video src={item.url} style={{ width: '100%', height: '90px', objectFit: 'cover', display: 'block' }} />
-              : <img src={item.url} alt="media" style={{ width: '100%', height: '90px', objectFit: 'cover', display: 'block' }} />
+              ? <video src={item.url} className="media-thumb" style={{ width: '100%', objectFit: 'cover', display: 'block' }} />
+              : <img src={item.url} alt="media" className="media-thumb" style={{ width: '100%', objectFit: 'cover', display: 'block' }} />
             }
             <div style={{ padding: '8px' }}>
               <button onClick={() => onDelete(item._id)} style={{
