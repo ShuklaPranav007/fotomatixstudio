@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import img from "../assets/logo.png"
 import { useNavigate } from 'react-router-dom';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -47,7 +48,7 @@ export default function AdminLogin() {
         position: 'relative', zIndex: 2,
       }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <img src="/logo.png" alt="Foto Matix Studio" style={{ height: '50px', objectFit: 'contain', marginBottom: '16px' }} />
+          <img src={img} alt="Foto Matix Studio" style={{ height: '50px', objectFit: 'contain', marginBottom: '16px' }} />
           <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>Admin Login</h2>
           <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>Foto Matix Studio dashboard</p>
         </div>

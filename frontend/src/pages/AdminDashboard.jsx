@@ -3,7 +3,15 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const CATEGORIES = ['wedding', 'birthday', 'portrait', 'video'];
+const CATEGORIES = ['wedding', 'prewedding', 'commercial', 'event', 'maternity'];
+
+const CATEGORY_LABELS = {
+  wedding:    'Wedding Shoot',
+  prewedding: 'Pre Wedding Shoot',
+  commercial: 'Commercial Shoot',
+  event:      'Event Shoot',
+  maternity:  'Maternity Photoshoot',
+};
 
 export default function AdminDashboard() {
   const [media, setMedia] = useState([]);
@@ -59,8 +67,6 @@ export default function AdminDashboard() {
   };
 
   const filtered = activeTab === 'all' ? media : media.filter(m => m.category === activeTab);
-  const totalPhotos = media.filter(m => m.type === 'image').length;
-  const totalVideos = media.filter(m => m.type === 'video').length;
 
   const inputStyle = {
     padding: '10px 14px', fontSize: '13px',
@@ -75,12 +81,13 @@ export default function AdminDashboard() {
       <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '500px', height: '500px', background: 'radial-gradient(circle,rgba(120,60,255,0.15),transparent 70%)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: 0, right: 0, width: '400px', height: '400px', background: 'radial-gradient(circle,rgba(60,180,255,0.1),transparent 70%)', pointerEvents: 'none' }} />
 
-      {/* TOPBAR */}
+      {/* TOPBAR
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '14px 32px',
         background: 'rgba(255,255,255,0.04)',
         backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(255,255,255,0.08)',
         position: 'sticky', top: 0, zIndex: 100,
       }}>
@@ -91,17 +98,17 @@ export default function AdminDashboard() {
         <button onClick={() => navigate('/')} className="btn-glass" style={{ padding: '7px 18px', fontSize: '12px' }}>
           View Site
         </button>
-      </div>
+      </div> */}
 
       {/* CONTENT */}
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px', position: 'relative', zIndex: 2 }}>
 
-        {/* Stats / Filter Tabs */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,minmax(0,1fr))', gap: '10px', marginBottom: '28px' }}>
+        {/* Stats / Filter Tabs
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,minmax(0,1fr))', gap: '10px', marginBottom: '28px' }}>
           {[
             { label: 'All', num: media.length, cat: 'all' },
             ...CATEGORIES.map(cat => ({
-              label: cat.charAt(0).toUpperCase() + cat.slice(1),
+              label: CATEGORY_LABELS[cat],
               num: media.filter(m => m.category === cat).length,
               cat,
             })),
@@ -109,15 +116,15 @@ export default function AdminDashboard() {
             <div key={i} onClick={() => setActiveTab(s.cat)} style={{
               background: activeTab === s.cat ? 'rgba(124,58,237,0.4)' : 'rgba(255,255,255,0.06)',
               border: activeTab === s.cat ? '1px solid rgba(124,58,237,0.6)' : '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '14px', padding: '16px',
+              borderRadius: '14px', padding: '14px 10px',
               cursor: 'pointer', transition: 'all 0.2s',
               textAlign: 'center',
             }}>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginBottom: '6px' }}>{s.label}</div>
-              <div style={{ fontSize: '26px', fontWeight: 700, color: '#fff' }}>{s.num}</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginBottom: '6px', lineHeight: 1.3 }}>{s.label}</div>
+              <div style={{ fontSize: '24px', fontWeight: 700, color: '#fff' }}>{s.num}</div>
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* Upload Card */}
         <div style={{
@@ -128,7 +135,11 @@ export default function AdminDashboard() {
           <h2 style={{ fontSize: '15px', fontWeight: 600, color: '#fff', marginBottom: '18px' }}>Upload new work</h2>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
             <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} style={inputStyle}>
-              {CATEGORIES.map(c => <option key={c} value={c} style={{ background: '#1a0f2e' }}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+              {CATEGORIES.map(c =>
+                <option key={c} value={c} style={{ background: '#1a0f2e' }}>
+                  {CATEGORY_LABELS[c]}
+                </option>
+              )}
             </select>
             <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} style={inputStyle}>
               <option value="image" style={{ background: '#1a0f2e' }}>Image</option>
@@ -176,7 +187,9 @@ function CategorySection({ cat, items, onDelete }) {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
         <div style={{ width: '3px', height: '24px', background: 'linear-gradient(to bottom,#7c3aed,#2563eb)', borderRadius: '2px' }} />
-        <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#fff', textTransform: 'capitalize' }}>{cat}</h3>
+        <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#fff' }}>
+          {{ wedding: 'Wedding Shoot', prewedding: 'Pre Wedding Shoot', commercial: 'Commercial Shoot', event: 'Event Shoot', maternity: 'Maternity Photoshoot' }[cat]}
+        </h3>
         <span style={{ fontSize: '11px', padding: '2px 10px', background: 'rgba(124,58,237,0.25)', border: '1px solid rgba(124,58,237,0.3)', borderRadius: '50px', color: 'rgba(200,180,255,0.8)' }}>
           {items.length} {items.length === 1 ? 'item' : 'items'}
         </span>

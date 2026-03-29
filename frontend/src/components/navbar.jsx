@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import img from "../assets/logo.png"
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -20,6 +21,11 @@ export default function Navbar() {
     window.location.reload();
   };
 
+  const navLinks = [
+    { id: 'home',       label: 'Home' },
+    { id: 'contact',    label: 'Contact' },
+  ];
+
   return (
     <nav style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -31,20 +37,20 @@ export default function Navbar() {
       position: 'sticky', top: 0, zIndex: 100,
       flexWrap: 'wrap', gap: '12px',
     }}>
-      <div onClick={() => scrollTo('home')} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-        <img src="/logo.png" alt="Foto Matix Studio" style={{ height: '40px', objectFit: 'contain' }} />
+      <div onClick={() => scrollTo('home')} style={{ cursor: 'pointer' }}>
+        <img src={img} alt="Foto Matix Studio" style={{ height: '40px', objectFit: 'contain' }} />
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
-        {['home', 'wedding', 'birthday', 'video', 'portrait', 'contact'].map(id => (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+        {navLinks.map(({ id, label }) => (
           <span key={id} onClick={() => scrollTo(id)} style={{
-            fontSize: '13px', color: 'rgba(255,255,255,0.65)',
-            cursor: 'pointer', transition: 'color 0.2s', textTransform: 'capitalize',
+            fontSize: '13px', color: 'rgba(255,255,255,0.6)',
+            cursor: 'pointer', transition: 'color 0.2s',
           }}
             onMouseEnter={e => e.target.style.color = '#fff'}
-            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.65)'}
+            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.6)'}
           >
-            {id === 'home' ? 'Home' : id === 'wedding' ? 'Weddings' : id === 'birthday' ? 'Birthdays' : id === 'video' ? 'Videos' : id === 'portrait' ? 'Portraits' : 'Contact'}
+            {label}
           </span>
         ))}
 
