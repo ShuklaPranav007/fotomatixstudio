@@ -2,176 +2,187 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const CATEGORIES = ['all', 'wedding', 'portrait', 'birthday', 'video'];
+const CATEGORIES = ['wedding', 'birthday', 'video', 'portrait'];
+
+const categoryConfig = {
+  wedding:  { label: 'Wedding Photos',  desc: 'Capturing the love, joy, and unforgettable moments of your special day.' },
+  birthday: { label: 'Birthday Photos', desc: 'Cherishing the milestones and memories, one snapshot at a time.' },
+  video:    { label: 'Wedding Videos',  desc: 'Bringing stories to life through motion, capturing the essence of the moment.' },
+  portrait: { label: 'Portraits',       desc: 'Crafting professional portraits that capture your unique personality.' },
+};
+
+const Blob = ({ style }) => (
+  <div style={{ position: 'absolute', borderRadius: '50%', pointerEvents: 'none', ...style }} />
+);
 
 export default function Home() {
-  const [media, setMedia] = useState([]);
-  const [sections, setSections] = useState([]);
-  const [active, setActive] = useState('all');
+  const [mediaByCategory, setMediaByCategory] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`${API}/api/sections`).then(r => setSections(r.data));
+    const fetchAll = async () => {
+      setLoading(true);
+      try {
+        const results = await Promise.all(
+          CATEGORIES.map(cat =>
+            axios.get(`${API}/api/gallery?category=${cat}`).then(r => ({ cat, data: r.data }))
+          )
+        );
+        const grouped = {};
+        results.forEach(({ cat, data }) => { grouped[cat] = data; });
+        setMediaByCategory(grouped);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAll();
   }, []);
 
-  useEffect(() => {
-    const url = active === 'all'
-      ? `${API}/api/gallery`
-      : `${API}/api/gallery?category=${active}`;
-    setLoading(true);
-    axios.get(url).then(r => setMedia(r.data)).finally(() => setLoading(false));
-  }, [active]);
-
-  const isVisible = (name) => {
-    const s = sections.find(s => s.name.toLowerCase() === name.toLowerCase());
-    return s ? s.visible : true;
-  };
-
   return (
-    <div>
+    <div style={{ background: 'linear-gradient(135deg,#0f0f1a 0%,#1a0f2e 40%,#0f1a2e 100%)', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+
+      {/* BG BLOBS */}
+      <Blob style={{ top: '-120px', left: '-120px', width: '600px', height: '600px', background: 'radial-gradient(circle,rgba(120,60,255,0.18),transparent 70%)' }} />
+      <Blob style={{ top: '300px', right: '-100px', width: '500px', height: '500px', background: 'radial-gradient(circle,rgba(60,180,255,0.13),transparent 70%)' }} />
+      <Blob style={{ bottom: '200px', left: '30%', width: '400px', height: '400px', background: 'radial-gradient(circle,rgba(80,200,120,0.09),transparent 70%)' }} />
 
       {/* HERO */}
-      {isVisible('hero') && (
-        <section style={{
-          padding: '80px 32px 56px', textAlign: 'center',
-          borderBottom: '0.5px solid #e5e5e5',
-        }}>
-          <p style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#888', marginBottom: '16px' }}>
+      <section id="home" style={{ padding: '90px 32px 70px', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+        <div className="fade-up" style={{ animationDelay: '0s' }}>
+          <div style={{
+            display: 'inline-block', background: 'rgba(124,58,237,0.2)',
+            border: '1px solid rgba(124,58,237,0.4)', borderRadius: '50px',
+            padding: '6px 18px', fontSize: '11px', color: 'rgba(200,180,255,0.9)',
+            letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '24px',
+          }}>
             Based in Indore, MP
-          </p>
-          <h1 style={{ fontSize: '38px', fontWeight: 600, lineHeight: 1.2, marginBottom: '14px' }}>
-            Capturing moments<br />that last forever
+          </div>
+        </div>
+
+        <div className="fade-up" style={{ animationDelay: '0.1s' }}>
+          <img src="/logo.png" alt="Foto Matix Studio" style={{ height: '70px', objectFit: 'contain', marginBottom: '20px' }} />
+          <h1 style={{ fontSize: '54px', fontWeight: 700, color: '#fff', lineHeight: 1.1, marginBottom: '18px', letterSpacing: '-0.02em' }}>
+            Capturing moments<br />
+            <span style={{ background: 'linear-gradient(90deg,#a78bfa,#60a5fa,#34d399)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              that last forever
+            </span>
           </h1>
-          <p style={{ fontSize: '15px', color: '#555', maxWidth: '460px', margin: '0 auto 28px', lineHeight: 1.7 }}>
+          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', maxWidth: '460px', margin: '0 auto 36px', lineHeight: 1.8 }}>
             Wedding photography, cinematic videos, portraits and events. Every frame tells your story.
           </p>
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-            <button onClick={() => document.getElementById('work').scrollIntoView({ behavior: 'smooth' })}
-              style={{ padding: '11px 24px', fontSize: '13px', fontWeight: 500, background: '#111', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+          <p style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.7)', marginBottom: '36px' }}>
+            <a href="tel:+918960889997" style={{ color: '#a78bfa' }}>+91 89608 89997</a>
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <button className="btn-solid" onClick={() => document.getElementById('wedding')?.scrollIntoView({ behavior: 'smooth' })}>
               View Gallery
             </button>
-            <button onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
-              style={{ padding: '11px 24px', fontSize: '13px', background: 'transparent', color: '#111', border: '0.5px solid #ccc', borderRadius: '8px', cursor: 'pointer' }}>
+            <button className="btn-glass" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
               Book a Session
             </button>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* STATS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', borderBottom: '0.5px solid #e5e5e5' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '12px', padding: '0 32px 64px', position: 'relative', zIndex: 2 }}>
         {[
           { num: '320+', label: 'Weddings' },
           { num: '8 yrs', label: 'Experience' },
           { num: '1200+', label: 'Happy clients' },
           { num: '4K', label: 'Cinematic video' },
         ].map((s, i) => (
-          <div key={i} style={{
-            padding: '22px 16px', textAlign: 'center',
-            borderRight: i < 3 ? '0.5px solid #e5e5e5' : 'none',
+          <div key={i} className="card-hover" style={{
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '16px', padding: '22px', textAlign: 'center',
           }}>
-            <div style={{ fontSize: '22px', fontWeight: 600 }}>{s.num}</div>
-            <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>{s.label}</div>
+            <div style={{ fontSize: '28px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>{s.num}</div>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      {/* GALLERY */}
-      {isVisible('gallery') && (
-        <section id="work">
-          <div style={{ display: 'flex', gap: '8px', padding: '20px 32px', borderBottom: '0.5px solid #e5e5e5', flexWrap: 'wrap' }}>
-            {CATEGORIES.map(cat => (
-              <button key={cat} onClick={() => setActive(cat)} style={{
-                fontSize: '12px', padding: '6px 16px', borderRadius: '99px',
-                border: '0.5px solid', cursor: 'pointer',
-                borderColor: active === cat ? '#111' : '#ddd',
-                background: active === cat ? '#111' : 'transparent',
-                color: active === cat ? '#fff' : '#555',
-                transition: 'all 0.15s',
-              }}>
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-              </button>
-            ))}
-          </div>
+      {/* CATEGORY SECTIONS */}
+      {loading ? (
+        <p style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>Loading...</p>
+      ) : (
+        CATEGORIES.map((cat) => {
+          const items = mediaByCategory[cat] || [];
+          const config = categoryConfig[cat];
+          if (items.length === 0) return null;
 
-          <div style={{ padding: '24px 32px 56px' }}>
-            {loading ? (
-              <p style={{ color: '#aaa', textAlign: 'center', padding: '40px 0', fontSize: '14px' }}>Loading...</p>
-            ) : media.length === 0 ? (
-              <p style={{ color: '#aaa', textAlign: 'center', padding: '60px 0', fontSize: '14px' }}>No photos yet in this category.</p>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: '12px' }}>
-                {media.map(item => (
-                  <div key={item._id} style={{
-                    borderRadius: '12px', overflow: 'hidden',
-                    border: '0.5px solid #e5e5e5', position: 'relative',
-                    background: '#f5f5f5', cursor: 'pointer',
-                  }}
-                    onMouseEnter={e => e.currentTarget.querySelector('.ov').style.opacity = 1}
-                    onMouseLeave={e => e.currentTarget.querySelector('.ov').style.opacity = 0}
-                  >
+          return (
+            <section key={cat} id={cat} style={{ padding: '48px 32px', position: 'relative', zIndex: 2 }}>
+
+              {/* Section Header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '10px' }}>
+                <div style={{ width: '4px', height: '32px', background: 'linear-gradient(to bottom,#7c3aed,#2563eb)', borderRadius: '2px' }} />
+                <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#fff' }}>{config.label}</h2>
+                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}>{items.length} items</span>
+              </div>
+              <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginBottom: '28px', marginLeft: '20px', lineHeight: 1.7 }}>
+                {config.desc}
+              </p>
+
+              {/* Divider */}
+              <div style={{ height: '1px', background: 'linear-gradient(to right,rgba(124,58,237,0.5),rgba(37,99,235,0.3),transparent)', marginBottom: '28px' }} />
+
+              {/* Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: '16px' }}>
+                {items.map(item => (
+                  <div key={item._id} className="card-hover" style={{
+                    borderRadius: '16px', overflow: 'hidden',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    position: 'relative',
+                  }}>
                     {item.type === 'video'
-                      ? <video src={item.url} style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block' }} />
-                      : <img src={item.url} alt={item.title} style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block' }} />
+                      ? <video src={item.url} controls style={{ width: '100%', height: '240px', objectFit: 'cover', display: 'block' }} />
+                      : <img src={item.url} alt={cat} style={{ width: '100%', height: '240px', objectFit: 'cover', display: 'block' }} loading="lazy" />
                     }
-                    <div className="ov" style={{
-                      position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.38)',
-                      display: 'flex', alignItems: 'flex-end', padding: '14px',
-                      opacity: 0, transition: 'opacity 0.2s', borderRadius: '12px',
+                    <div style={{
+                      position: 'absolute', bottom: 0, left: 0, right: 0,
+                      background: 'linear-gradient(to top,rgba(0,0,0,0.7),transparent)',
+                      padding: '20px 14px 12px',
                     }}>
-                      <div>
-                        <div style={{ fontSize: '13px', color: '#fff', fontWeight: 500 }}>{item.title}</div>
-                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.65)', marginTop: '2px', textTransform: 'capitalize' }}>{item.category}</div>
-                      </div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{cat}</div>
                     </div>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* ABOUT */}
-      {isVisible('about') && (
-        <section id="about" style={{
-          padding: '56px 32px', borderTop: '0.5px solid #e5e5e5',
-          display: 'flex', gap: '48px', alignItems: 'center', flexWrap: 'wrap',
-        }}>
-          <div style={{
-            width: '100px', height: '100px', borderRadius: '50%',
-            background: '#f0f0f0', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '36px', flexShrink: 0,
-          }}>📷</div>
-          <div style={{ flex: 1, minWidth: '240px' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '10px' }}>Shubham — Photographer & Filmmaker</h2>
-            <p style={{ fontSize: '14px', color: '#555', lineHeight: 1.8, maxWidth: '560px' }}>
-              With 8+ years of experience capturing weddings, portraits and events across Madhya Pradesh,
-              I bring a cinematic eye and a personal touch to every shoot.
-            </p>
-          </div>
-        </section>
+            </section>
+          );
+        })
       )}
 
       {/* CONTACT */}
-      {isVisible('contact') && (
-        <section id="contact" style={{
-          padding: '36px 32px', background: '#f9f9f9',
-          borderTop: '0.5px solid #e5e5e5',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: '20px',
+      <section id="contact" style={{ padding: '48px 32px 64px', position: 'relative', zIndex: 2 }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.05)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '24px', padding: '48px 40px',
+          textAlign: 'center',
+          backdropFilter: 'blur(20px)',
         }}>
-          <div>
-            <p style={{ fontSize: '16px', fontWeight: 500, marginBottom: '6px' }}>Ready to book your session?</p>
-            <p style={{ fontSize: '13px', color: '#666' }}>+91 98765 43210 &nbsp;·&nbsp; shubhamstudio@gmail.com</p>
+          <img src="/logo.png" alt="Foto Matix Studio" style={{ height: '56px', objectFit: 'contain', marginBottom: '20px' }} />
+          <h2 style={{ fontSize: '28px', fontWeight: 700, color: '#fff', marginBottom: '10px' }}>Let's Talk!</h2>
+          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginBottom: '32px', lineHeight: 1.8 }}>
+            An open invitation to connect and explore collaborative opportunities.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a href="tel:+918960889997">
+              <button className="btn-solid">+91 89608 89997</button>
+            </a>
+            <a href="mailto:fotomatixstudio99@gmail.com">
+              <button className="btn-glass">fotomatixstudio99@gmail.com</button>
+            </a>
           </div>
-          <a href="mailto:shubhamstudio@gmail.com">
-            <button style={{ padding: '11px 24px', fontSize: '13px', fontWeight: 500, background: '#111', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
-              Get in touch
-            </button>
-          </a>
-        </section>
-      )}
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', marginTop: '40px' }}>
+            © 2025 Foto Matix Studio. All rights reserved.
+          </p>
+        </div>
+      </section>
 
     </div>
   );
