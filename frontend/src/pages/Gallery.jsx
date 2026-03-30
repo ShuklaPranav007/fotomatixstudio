@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// 1. Added the API connection variable
+const API = import.meta.env.VITE_API_URL || 'https://fotomatixstudio-backend.onrender.com';
+
 const CATEGORIES = ['all', 'wedding', 'birthday', 'portrait', 'video'];
 
 export default function Gallery() {
@@ -8,9 +11,11 @@ export default function Gallery() {
   const [active, setActive] = useState('all');
 
   useEffect(() => {
+    // 2. Replaced localhost with the API variable
     const url = active === 'all'
-      ? 'http://localhost:5000/api/gallery'
-      : `http://localhost:5000/api/gallery?category=${active}`;
+      ? `${API}/api/gallery`
+      : `${API}/api/gallery?category=${active}`;
+      
     axios.get(url).then(res => setMedia(res.data));
   }, [active]);
 
@@ -19,7 +24,14 @@ export default function Gallery() {
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
         {CATEGORIES.map(c => (
           <button key={c} onClick={() => setActive(c)}
-            style={{ background: active === c ? '#000' : '#eee', color: active === c ? '#fff' : '#000', padding: '8px 16px', border: 'none', cursor: 'pointer', borderRadius: '4px' }}>
+            style={{ 
+              background: active === c ? '#000' : '#eee', 
+              color: active === c ? '#fff' : '#000', 
+              padding: '8px 16px', 
+              border: 'none', 
+              cursor: 'pointer', 
+              borderRadius: '4px' 
+            }}>
             {c.charAt(0).toUpperCase() + c.slice(1)}
           </button>
         ))}
