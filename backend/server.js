@@ -23,11 +23,18 @@ mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log('db connected');
 
-    const existing = await Admin.findOne({ username: 'shuklapranav739@gmail.com' });
-    if (!existing) {
+    const admin1 = await Admin.findOne({ username: 'shuklapranav739@gmail.com' });
+    if (!admin1) {
       const hashed = await bcrypt.hash('sprnv007', 10);
       await Admin.create({ username: 'shuklapranav739@gmail.com', password: hashed });
-      console.log('Admin created');
+      console.log('Admin 1 created');
+    }
+
+    const admin2 = await Admin.findOne({ username: 'fotomatixstudio99@gmail.com' });
+    if (!admin2) {
+      const hashed = await bcrypt.hash('foto8960', 10);
+      await Admin.create({ username: 'fotomatixstudio99@gmail.com', password: hashed });
+      console.log('Admin 2 created');
     }
 
     const sectionCount = await Section.countDocuments();
