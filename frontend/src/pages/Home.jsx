@@ -253,7 +253,7 @@ export default function Home() {
           { num: "100+", label: "Weddings & Events" },
           { num: "6+ years ", label: "Experience" },
           { num: "Certified", label: "Delhi College of photography" },
-          { num: "DSLR 4K", label: "photographer & Cinematographer" },
+          { num: "Mirror Less 4k", label: "photographer & Cinematographer" },
         ].map((s, i) => (
           <div
             key={i}
