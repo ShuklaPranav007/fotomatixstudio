@@ -85,8 +85,18 @@ export default function Home() {
       <style>{`
         .hero-title { font-size: 54px; }
         .stats-grid { grid-template-columns: repeat(4,1fr); }
-        .gallery-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
         .contact-btns { flex-direction: row; }
+        
+        /* New Masonry Grid Fix */
+        .gallery-grid {
+          column-count: 3;
+          column-gap: 16px;
+        }
+        .gallery-item {
+          break-inside: avoid;
+          margin-bottom: 16px;
+        }
+
         @media (max-width: 1024px) {
           .hero-title { font-size: 42px; }
           .stats-grid { grid-template-columns: repeat(2,1fr); }
@@ -94,12 +104,12 @@ export default function Home() {
         @media (max-width: 768px) {
           .hero-title { font-size: 32px; }
           .stats-grid { grid-template-columns: repeat(2,1fr); }
-          .gallery-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+          .gallery-grid { column-count: 2; }
         }
         @media (max-width: 480px) {
           .hero-title { font-size: 26px; }
           .stats-grid { grid-template-columns: repeat(2,1fr); }
-          .gallery-grid { grid-template-columns: repeat(1,minmax(0,1fr)); }
+          .gallery-grid { column-count: 1; }
           .contact-btns { flex-direction: column; align-items: stretch; }
           .contact-btns a, .contact-btns button { width: 100%; }
         }
@@ -370,14 +380,12 @@ export default function Home() {
                 }}
               />
 
-              <div
-                className="gallery-grid"
-                style={{ display: "grid", gap: "16px" }}
-              >
+              {/* FIX: Masonry Grid Container */}
+              <div className="gallery-grid">
                 {items.map((item) => (
                   <div
                     key={item._id}
-                    className="card-hover"
+                    className="card-hover gallery-item"
                     style={{
                       borderRadius: "16px",
                       overflow: "hidden",
@@ -392,8 +400,7 @@ export default function Home() {
                         controls
                         style={{
                           width: "100%",
-                          height: "clamp(180px,25vw,240px)",
-                          objectFit: "cover",
+                          height: "auto", // FIX: Allow natural height
                           display: "block",
                         }}
                       />
@@ -403,8 +410,7 @@ export default function Home() {
                         alt={cat}
                         style={{
                           width: "100%",
-                          height: "clamp(180px,25vw,240px)",
-                          objectFit: "cover",
+                          height: "auto", // FIX: Allow natural height
                           display: "block",
                         }}
                         loading="lazy"
